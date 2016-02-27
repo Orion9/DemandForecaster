@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="false">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -143,5 +143,19 @@
     <orderEntry type="library" name="Maven: net.razorvine:pyrolite:4.9" level="project" />
     <orderEntry type="library" name="Maven: net.sf.py4j:py4j:0.9" level="project" />
     <orderEntry type="library" name="Maven: org.spark-project.spark:unused:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.spark:spark-sql_2.10:1.6.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.spark:spark-catalyst_2.10:1.6.0" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.janino:janino:2.7.8" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.janino:commons-compiler:2.7.8" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.parquet:parquet-column:1.7.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.parquet:parquet-common:1.7.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.parquet:parquet-encoding:1.7.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.parquet:parquet-generator:1.7.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.parquet:parquet-hadoop:1.7.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.parquet:parquet-format:2.3.0-incubating" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.parquet:parquet-jackson:1.7.0" level="project" />
+    <orderEntry type="library" name="Maven: com.databricks:spark-csv_2.10:1.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-csv:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.univocity:univocity-parsers:1.5.1" level="project" />
   </component>
 </module>
