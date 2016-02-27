@@ -13,12 +13,13 @@ public class Preprocessor {
         Configuration sparkConfig = Configuration.getSparkConfig();
         JavaSparkContext sc = new JavaSparkContext(sparkConfig.config);
         SQLContext sqlContext = new SQLContext(sc);
+
         DataFrame df = sqlContext.read()
                 .format("com.databricks.spark.csv")
                 .option("header", "true")
                 .load("transactions.csv");
 
-        df.take(5);
+        df.groupBy("date").count().show();
         df.printSchema();
     }
 }

@@ -10,12 +10,23 @@ import static java.lang.Integer.getInteger;
 /**
  * Created by Group 1.
  */
+
 public class Transaction {
     private String category;
     private String subcategory;
     private int amount;
     private Date date;
 
+    /**
+     * Creates an instance of Transaction class using
+     * data parsed from sample data file. Assumes all
+     * parsed data are strings.
+     *
+     * @param cat Category name.
+     * @param subcat Subcategory name.
+     * @param amount Transaction amount.
+     * @param date Transaction date.
+     */
     public Transaction(String cat, String subcat, String amount, String date) {
         this.setCategory(cat);
         this.setAmount(amount);
@@ -39,7 +50,7 @@ public class Transaction {
     }
 
     public void setDate(String date){
-        DateFormat dateFormat = new SimpleDateFormat();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             this.date = dateFormat.parse(date);
         } catch (ParseException e) {
