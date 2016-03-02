@@ -1,10 +1,12 @@
 package org.itu.demandforecaster;
 
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.ml.feature.OneHotEncoder;
 import org.apache.spark.ml.feature.StringIndexer;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.sql.DataFrame;
+import org.apache.spark.sql.SQLContext;
 
 /**
  * Created by Group 1.
@@ -23,6 +25,9 @@ public class Preprocessor {
     public StringIndexer categoryIndexer;
     public OneHotEncoder dayOfWeekEncoder, categoryEncoder;
     public VectorAssembler vectorAssembler;
+
+    // Debugging purposes only.
+    public DataFrame debug;
 
     /**
      * When a new object is derived, it sets up necessary indexers and encoders
@@ -54,6 +59,17 @@ public class Preprocessor {
 
     public void loadTrainingData() {
         SparkConf sparkConf = Configuration.getSparkConfig().config;
+        JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
+        SQLContext sqlContext = new SQLContext(sparkContext);
+
+        trainingData = sqlContext.read()
+                .format("com.databricks.spark.csv")
+                .option("header", "true")
+                .load("transactions.csv")
+                .repartition(6);
+        trainingData.registerTempTable("RawTrainData");
+        debug = sqlContext.sql("SELECT double(amount) label, category, weekofyear(date) weekOfYear, " +
+                "date_format(date, 'EEEE') dayOfWeek FROM RawTrainData").na().drop();
 
     }
 
