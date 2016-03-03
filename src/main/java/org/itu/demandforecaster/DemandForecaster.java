@@ -8,6 +8,7 @@ import org.apache.spark.sql.DataFrame;
 
 public class DemandForecaster {
     public static void main(String[] args) {
+        ForecasterPipeline fp = new ForecasterPipeline();
         Preprocessor pp = new Preprocessor();
         pp.loadData();
         DataFrame debug = pp.debug;
