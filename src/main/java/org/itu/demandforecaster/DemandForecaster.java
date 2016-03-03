@@ -1,5 +1,7 @@
 package org.itu.demandforecaster;
 
+import org.apache.spark.ml.tuning.TrainValidationSplitModel;
+import org.apache.spark.ml.tuning.TrainValidationSplit;
 import org.apache.spark.sql.DataFrame;
 
 /**
@@ -11,8 +13,22 @@ public class DemandForecaster {
         ForecasterPipeline fp = new ForecasterPipeline();
         Preprocessor pp = new Preprocessor();
         pp.loadData();
+        System.out.println("tita2");
         DataFrame debug = pp.debug;
         pp.getTestData().printSchema();
+        System.out.println("tita3");
         pp.getTestData().show();
+        System.out.println("tita4");
+
+
+        System.out.println("tita5");
+        TrainValidationSplit linearTvs = fp.tvs;
+        System.out.println("evaluating linear regression");
+       lrModel = pp.fitModel(linearTvs,pp.trainingData );
+        System.out.println("Generating predictions");
+        DataFrame lrOut = lrModel.transform(pp.testData)
+                .withColumnRenamed("prediction","Sales")
+                .withColumnRenamed("Id","PredId")
+                .select("PredId","Sales");
     }
 }

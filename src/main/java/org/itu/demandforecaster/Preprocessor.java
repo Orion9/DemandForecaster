@@ -5,6 +5,9 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.ml.feature.OneHotEncoder;
 import org.apache.spark.ml.feature.StringIndexer;
 import org.apache.spark.ml.feature.VectorAssembler;
+import org.apache.spark.ml.tuning.TrainValidationSplit;
+import org.apache.spark.ml.tuning.TrainValidationSplitModel;
+import org.apache.spark.mllib.evaluation.RegressionMetrics;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
 
@@ -75,6 +78,35 @@ public class Preprocessor {
 
         trainingData = splits[0];
         testData = splits[1];
+    }
+
+    public TrainValidationSplitModel fitModel( TrainValidationSplit tvs, DataFrame data){
+
+        System.out.println("Fitting data");
+        TrainValidationSplitModel model = tvs.fit(trainingData);
+        System.out.println("Now performing test on hold out set");
+
+        DataFrame holdout = model.transform(testData).select("prediction","label");
+
+        holdout.printSchema();
+        System.out.println("tita");
+        //RegressionMetrics rm = new RegressionMetrics(holdout.rdd().map();
+                //x => (x(0).asInstanceOf[Double], x(1).asInstanceOf[Double])))
+
+         //       Accumulator<Integer> accum = sc.accumulator(0);
+       // data.map(x -> { accum.add(x); return f(x); });
+/*
+        System.out.println("Test Metcis");
+        System.out.println("Test Explained Variance:");
+        System.out.println(rm.explainedVariance());
+        System.out.println("Test R^2 Coef:");
+        System.out.println(rm.r2());
+        System.out.println("Test MSE");
+        System.out.println(rm.meanSquaredError());
+        System.out.println("Test RMSE");
+        System.out.println(rm.rootMeanSquaredError());
+*/
+        return model;
     }
 
     /**
