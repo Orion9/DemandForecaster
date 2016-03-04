@@ -86,39 +86,7 @@ public class Preprocessor {
         testData = splits[1];
     }
 
-    public TrainValidationSplitModel fitModel( TrainValidationSplit tvs, DataFrame data){
 
-        System.out.println("Fitting data");
-        TrainValidationSplitModel model = tvs.fit(trainingData);
-        System.out.println("Now performing test on hold out set");
-
-        DataFrame holdout = model.transform(testData).select("prediction","label");
-
-        holdout.printSchema();
-        System.out.println("tita");
-        RegressionMetrics rm = new RegressionMetrics(holdout);
-        BinaryClassificationMetrics bcm = new BinaryClassificationMetrics(holdout);
-                //x => (x(0).asInstanceOf[Double], x(1).asInstanceOf[Double])))
-
-         //       Accumulator<Integer> accum = sc.accumulator(0);
-       // data.map(x -> { accum.add(x); return f(x); });
-
-        System.out.println("Test Metrics");
-        System.out.println("AUC-recall precision curve:");
-        System.out.println(bcm.areaUnderPR());
-        System.out.println("AUC ROC:");
-        System.out.println(bcm.areaUnderROC());
-        System.out.println("Test Explained Variance:");
-        System.out.println(rm.explainedVariance());
-        System.out.println("Test R^2 Coef:");
-        System.out.println(rm.r2());
-        System.out.println("Test MSE");
-        System.out.println(rm.meanSquaredError());
-        System.out.println("Test RMSE");
-        System.out.println(rm.rootMeanSquaredError());
-
-        return model;
-    }
 
     /**
      * Getters and setters.
@@ -147,4 +115,8 @@ public class Preprocessor {
     public void setProcessedData(DataFrame processedData) {
         this.processedData = processedData;
     }
+
+    public DataFrame getTrainingData() { return trainingData; }
+
+    public void setTrainingData(DataFrame trainingData) { this.trainingData = trainingData; }
 }

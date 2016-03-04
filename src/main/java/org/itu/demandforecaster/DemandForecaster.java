@@ -10,24 +10,13 @@ import org.apache.spark.sql.DataFrame;
 
 public class DemandForecaster {
     public static void main(String[] args) {
-        ForecasterPipeline fp = new ForecasterPipeline();
-        Preprocessor pp = new Preprocessor();
-        pp.loadData();
-        System.out.println("tita2");
-        DataFrame debug = pp.debug;
-        pp.getTestData().printSchema();
-        System.out.println("tita3");
-        pp.getTestData().show();
-        System.out.println("tita4");
+        DemandModeler dm = new DemandModeler();
 
-
-        System.out.println("tita5");
-        TrainValidationSplit linearTvs = fp.tvs;
         System.out.println("evaluating linear regression");
-        TrainValidationSplitModel lrModel = pp.fitModel(linearTvs,pp.trainingData );
+        TrainValidationSplitModel lrModel = dm.fitModel();
         System.out.println("Generating predictions");
 
-        DataFrame lrOut = lrModel.transform(pp.testData)
+        DataFrame lrOut = lrModel.transform(dm.getPp().testData)
                 .withColumnRenamed("prediction","Amount")
                 .withColumnRenamed("dayOfWeek","dayOfWeek")
                 .withColumnRenamed("weekOfYear", "weekOfYear")

@@ -48,4 +48,6 @@ public class ForecasterPipeline {
                 .setEstimatorParamMaps(paramGrid)
                 .setTrainRatio(0.75);
     }
+
+    public TrainValidationSplit getTvs() { return tvs; }
 }
