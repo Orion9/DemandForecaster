@@ -26,9 +26,13 @@ public class DemandForecaster {
         System.out.println("evaluating linear regression");
         TrainValidationSplitModel lrModel = pp.fitModel(linearTvs,pp.trainingData );
         System.out.println("Generating predictions");
+
         DataFrame lrOut = lrModel.transform(pp.testData)
-                .withColumnRenamed("prediction","Sales")
-                .withColumnRenamed("Id","PredId")
-                .select("PredId","Sales");
+                .withColumnRenamed("prediction","Amount")
+                .withColumnRenamed("dayOfWeek","dayOfWeek")
+                .withColumnRenamed("weekOfYear", "weekOfYear")
+                .withColumnRenamed("category", "category")
+                .select("weekOfYear", "dayOfWeek", "category","Amount");
+        lrOut.show();
     }
 }

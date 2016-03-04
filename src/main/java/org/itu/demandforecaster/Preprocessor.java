@@ -7,6 +7,8 @@ import org.apache.spark.ml.feature.StringIndexer;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.ml.tuning.TrainValidationSplit;
 import org.apache.spark.ml.tuning.TrainValidationSplitModel;
+import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
+import org.apache.spark.mllib.evaluation.RegressionMetrics;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
 
@@ -71,7 +73,7 @@ public class Preprocessor {
                 .option("header", "true")
                 .option("inferSchema", "true")
                 .load("transactions.csv")
-                .repartition(6);
+                .repartition(3);
         rawData.registerTempTable("RawTrainData");
         processedData = sqlContext.sql("SELECT cast(amount as double) label, category, weekofyear(date) weekOfYear, " +
                 "date_format(date, 'EEEE') dayOfWeek FROM RawTrainData").na().drop();
@@ -94,13 +96,18 @@ public class Preprocessor {
 
         holdout.printSchema();
         System.out.println("tita");
-        //RegressionMetrics rm = new RegressionMetrics(holdout.rdd().map();
+        RegressionMetrics rm = new RegressionMetrics(holdout);
+        BinaryClassificationMetrics bcm = new BinaryClassificationMetrics(holdout);
                 //x => (x(0).asInstanceOf[Double], x(1).asInstanceOf[Double])))
 
          //       Accumulator<Integer> accum = sc.accumulator(0);
        // data.map(x -> { accum.add(x); return f(x); });
-/*
-        System.out.println("Test Metcis");
+
+        System.out.println("Test Metrics");
+        System.out.println("AUC-recall precision curve:");
+        System.out.println(bcm.areaUnderPR());
+        System.out.println("AUC ROC:");
+        System.out.println(bcm.areaUnderROC());
         System.out.println("Test Explained Variance:");
         System.out.println(rm.explainedVariance());
         System.out.println("Test R^2 Coef:");
@@ -109,7 +116,7 @@ public class Preprocessor {
         System.out.println(rm.meanSquaredError());
         System.out.println("Test RMSE");
         System.out.println(rm.rootMeanSquaredError());
-*/
+
         return model;
     }
 
