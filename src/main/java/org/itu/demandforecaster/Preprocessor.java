@@ -7,7 +7,6 @@ import org.apache.spark.ml.feature.StringIndexer;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.ml.tuning.TrainValidationSplit;
 import org.apache.spark.ml.tuning.TrainValidationSplitModel;
-import org.apache.spark.mllib.evaluation.RegressionMetrics;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
 
@@ -27,7 +26,7 @@ public class Preprocessor {
     protected DataFrame processedData;
 
     // Objects for data preprocessing.
-    public StringIndexer categoryIndexer;
+    public StringIndexer categoryIndexer, dayOfWeekIndexer;
     public OneHotEncoder dayOfWeekEncoder, categoryEncoder;
     public VectorAssembler vectorAssembler;
 
@@ -44,8 +43,12 @@ public class Preprocessor {
                 .setInputCol("category")
                 .setOutputCol("categoryIndex");
 
-        dayOfWeekEncoder = new OneHotEncoder()
+        dayOfWeekIndexer = new StringIndexer()
                 .setInputCol("dayOfWeek")
+                .setOutputCol("dayOfWeekIndex");
+
+        dayOfWeekEncoder = new OneHotEncoder()
+                .setInputCol("dayOfWeekIndex")
                 .setOutputCol("dayOfWeekVector");
 
         categoryEncoder = new OneHotEncoder()
@@ -70,8 +73,9 @@ public class Preprocessor {
                 .load("transactions.csv")
                 .repartition(6);
         rawData.registerTempTable("RawTrainData");
-        processedData = sqlContext.sql("SELECT amount label, category, weekofyear(date) weekOfYear, " +
+        processedData = sqlContext.sql("SELECT cast(amount as double) label, category, weekofyear(date) weekOfYear, " +
                 "date_format(date, 'EEEE') dayOfWeek FROM RawTrainData").na().drop();
+
 
         // After loading training data some of it will be split as test data. Here 90% of data taken as training data.
         DataFrame[] splits = processedData.randomSplit(new double[]{0.9, 0.1});

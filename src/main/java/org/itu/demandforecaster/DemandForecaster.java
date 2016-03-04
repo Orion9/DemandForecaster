@@ -24,7 +24,7 @@ public class DemandForecaster {
         System.out.println("tita5");
         TrainValidationSplit linearTvs = fp.tvs;
         System.out.println("evaluating linear regression");
-       lrModel = pp.fitModel(linearTvs,pp.trainingData );
+        TrainValidationSplitModel lrModel = pp.fitModel(linearTvs,pp.trainingData );
         System.out.println("Generating predictions");
         DataFrame lrOut = lrModel.transform(pp.testData)
                 .withColumnRenamed("prediction","Sales")

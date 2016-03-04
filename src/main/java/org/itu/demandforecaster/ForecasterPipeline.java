@@ -36,8 +36,8 @@ public class ForecasterPipeline {
                 .build();
 
         // Pipeline stages determined by columns that have been processed.
-        PipelineStage[] pipelineStages = {pp.categoryIndexer, pp.dayOfWeekEncoder,
-                pp.vectorAssembler, linearRegression};
+        PipelineStage[] pipelineStages = {pp.categoryIndexer, pp.dayOfWeekIndexer, pp.categoryEncoder,
+                pp.dayOfWeekEncoder, pp.vectorAssembler, linearRegression};
         Pipeline pipeline = new Pipeline()
                 .setStages(pipelineStages);
 
