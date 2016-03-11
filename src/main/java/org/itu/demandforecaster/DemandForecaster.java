@@ -1,7 +1,6 @@
 package org.itu.demandforecaster;
 
 import org.apache.spark.ml.tuning.TrainValidationSplitModel;
-import org.apache.spark.ml.tuning.TrainValidationSplit;
 import org.apache.spark.sql.DataFrame;
 
 /**
@@ -21,7 +20,8 @@ public class DemandForecaster {
                 .withColumnRenamed("dayOfWeek","dayOfWeek")
                 .withColumnRenamed("weekOfYear", "weekOfYear")
                 .withColumnRenamed("category", "category")
-                .select("weekOfYear", "dayOfWeek", "category","Amount");
+                .withColumnRenamed("subcategory", "subcategory")
+                .select("weekOfYear", "dayOfWeek", "category", "subcategory", "Amount");
         lrOut.show();
     }
 }

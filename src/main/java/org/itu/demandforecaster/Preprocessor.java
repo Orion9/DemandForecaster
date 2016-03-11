@@ -5,10 +5,6 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.ml.feature.OneHotEncoder;
 import org.apache.spark.ml.feature.StringIndexer;
 import org.apache.spark.ml.feature.VectorAssembler;
-import org.apache.spark.ml.tuning.TrainValidationSplit;
-import org.apache.spark.ml.tuning.TrainValidationSplitModel;
-import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
-import org.apache.spark.mllib.evaluation.RegressionMetrics;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
 
@@ -28,8 +24,8 @@ public class Preprocessor {
     protected DataFrame processedData;
 
     // Objects for data preprocessing.
-    public StringIndexer categoryIndexer, dayOfWeekIndexer;
-    public OneHotEncoder dayOfWeekEncoder, categoryEncoder;
+    public StringIndexer categoryIndexer, dayOfWeekIndexer, subcategoryIndexer;
+    public OneHotEncoder dayOfWeekEncoder, categoryEncoder, subcategoryEncoder;
     public VectorAssembler vectorAssembler;
 
     // Debugging purposes only.
@@ -43,11 +39,18 @@ public class Preprocessor {
     public Preprocessor(){
         categoryIndexer = new StringIndexer()
                 .setInputCol("category")
-                .setOutputCol("categoryIndex");
+                .setOutputCol("categoryIndex")
+                .setHandleInvalid("skip");
+
+        subcategoryIndexer = new StringIndexer()
+                .setInputCol("subcategory")
+                .setOutputCol("subcategoryIndex")
+                .setHandleInvalid("skip");
 
         dayOfWeekIndexer = new StringIndexer()
                 .setInputCol("dayOfWeek")
-                .setOutputCol("dayOfWeekIndex");
+                .setOutputCol("dayOfWeekIndex")
+                .setHandleInvalid("skip");
 
         dayOfWeekEncoder = new OneHotEncoder()
                 .setInputCol("dayOfWeekIndex")
@@ -57,7 +60,11 @@ public class Preprocessor {
                 .setInputCol("categoryIndex")
                 .setOutputCol("categoryVector");
 
-        String[] cols = {"categoryVector", "dayOfWeekVector"};
+        subcategoryEncoder = new OneHotEncoder()
+                .setInputCol("subcategoryIndex")
+                .setOutputCol("subcategoryVector");
+
+        String[] cols = {"subcategoryVector", "categoryVector", "dayOfWeekVector"};
         vectorAssembler = new VectorAssembler()
                 .setInputCols(cols)
                 .setOutputCol("features");
@@ -73,10 +80,10 @@ public class Preprocessor {
                 .option("header", "true")
                 .option("inferSchema", "true")
                 .load("transactions.csv")
-                .repartition(3);
+                .repartition(6);
         rawData.registerTempTable("RawTrainData");
-        processedData = sqlContext.sql("SELECT cast(amount as double) label, category, weekofyear(date) weekOfYear, " +
-                "date_format(date, 'EEEE') dayOfWeek FROM RawTrainData").na().drop();
+        processedData = sqlContext.sql("SELECT cast(amount as double) label, subcategory, category, weekofyear(date) " +
+                "weekOfYear, date_format(date, 'EEEE') dayOfWeek FROM RawTrainData").na().drop();
 
 
         // After loading training data some of it will be split as test data. Here 90% of data taken as training data.
