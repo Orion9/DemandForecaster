@@ -24,12 +24,12 @@ public class Preprocessor {
     protected DataFrame processedData;
 
     // Objects for data preprocessing.
-    public StringIndexer categoryIndexer, dayOfWeekIndexer, subcategoryIndexer;
-    public OneHotEncoder dayOfWeekEncoder, categoryEncoder, subcategoryEncoder;
+    public StringIndexer categoryIndexer, dayOfWeekIndexer, subcategoryIndexer, dateIndexer;
+    public OneHotEncoder dayOfWeekEncoder, categoryEncoder, subcategoryEncoder, dateEncoder;
     public VectorAssembler vectorAssembler;
 
-    // Debugging purposes only.
-    public DataFrame debug;
+    protected JavaSparkContext sparkContext;
+    protected SQLContext sqlContext;
 
     /**
      * When a new object is derived, it sets up necessary indexers and encoders
@@ -52,6 +52,11 @@ public class Preprocessor {
                 .setOutputCol("dayOfWeekIndex")
                 .setHandleInvalid("skip");
 
+        dateIndexer = new StringIndexer()
+                .setInputCol("Date")
+                .setOutputCol("dateIndex")
+                .setHandleInvalid("skip");
+
         dayOfWeekEncoder = new OneHotEncoder()
                 .setInputCol("dayOfWeekIndex")
                 .setOutputCol("dayOfWeekVector");
@@ -64,7 +69,11 @@ public class Preprocessor {
                 .setInputCol("subcategoryIndex")
                 .setOutputCol("subcategoryVector");
 
-        String[] cols = {"subcategoryVector", "categoryVector", "dayOfWeekVector"};
+        dateEncoder = new OneHotEncoder()
+                .setInputCol("dateIndex")
+                .setOutputCol("dateVector");
+
+        String[] cols = {"subcategoryVector", "categoryVector", "dayOfWeekVector", "dateVector"};
         vectorAssembler = new VectorAssembler()
                 .setInputCols(cols)
                 .setOutputCol("features");
@@ -72,8 +81,8 @@ public class Preprocessor {
 
     public void loadData() {
         SparkConf sparkConf = Configuration.getSparkConfig().config;
-        JavaSparkContext sparkContext = new JavaSparkContext(sparkConf);
-        SQLContext sqlContext = new SQLContext(sparkContext);
+        sparkContext = new JavaSparkContext(sparkConf);
+        sqlContext = new SQLContext(sparkContext);
 
         rawData = sqlContext.read()
                 .format("com.databricks.spark.csv")
@@ -82,12 +91,12 @@ public class Preprocessor {
                 .load("transactions.csv")
                 .repartition(6);
         rawData.registerTempTable("RawTrainData");
-        processedData = sqlContext.sql("SELECT cast(amount as double) label, subcategory, category, weekofyear(date) " +
-                "weekOfYear, date_format(date, 'EEEE') dayOfWeek FROM RawTrainData").na().drop();
+        processedData = sqlContext.sql("SELECT cast(amount as double) label, subcategory, category, day(date) Date, " +
+                "date_format(date, 'EEEE') dayOfWeek FROM RawTrainData").na().drop();
 
 
         // After loading training data some of it will be split as test data. Here 90% of data taken as training data.
-        DataFrame[] splits = processedData.randomSplit(new double[]{0.9, 0.1});
+        DataFrame[] splits = processedData.randomSplit(new double[]{0.7, 0.3});
 
         trainingData = splits[0];
         testData = splits[1];
@@ -126,4 +135,12 @@ public class Preprocessor {
     public DataFrame getTrainingData() { return trainingData; }
 
     public void setTrainingData(DataFrame trainingData) { this.trainingData = trainingData; }
+
+    public JavaSparkContext getSparkContext() {
+        return sparkContext;
+    }
+
+    public SQLContext getSqlContext() {
+        return sqlContext;
+    }
 }

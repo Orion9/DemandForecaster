@@ -36,8 +36,8 @@ public class ForecasterPipeline {
                 .build();
 
         // Pipeline stages determined by columns that have been processed.
-        PipelineStage[] pipelineStages = {pp.subcategoryIndexer, pp.categoryIndexer, pp.dayOfWeekIndexer,
-                pp.subcategoryEncoder, pp.categoryEncoder, pp.dayOfWeekEncoder, pp.vectorAssembler, linearRegression};
+        PipelineStage[] pipelineStages = {pp.subcategoryIndexer, pp.categoryIndexer, pp.dayOfWeekIndexer, pp.dateIndexer,
+                pp.subcategoryEncoder, pp.categoryEncoder, pp.dayOfWeekEncoder, pp.dateEncoder, pp.vectorAssembler, linearRegression};
         Pipeline pipeline = new Pipeline()
                 .setStages(pipelineStages);
 
@@ -46,7 +46,7 @@ public class ForecasterPipeline {
                 .setEstimator(pipeline)
                 .setEvaluator(new RegressionEvaluator())
                 .setEstimatorParamMaps(paramGrid)
-                .setTrainRatio(0.75);
+                .setTrainRatio(0.55);
     }
 
     public TrainValidationSplit getTvs() { return tvs; }

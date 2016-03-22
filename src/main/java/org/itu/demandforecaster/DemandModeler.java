@@ -2,7 +2,6 @@ package org.itu.demandforecaster;
 
 import org.apache.spark.ml.tuning.TrainValidationSplit;
 import org.apache.spark.ml.tuning.TrainValidationSplitModel;
-import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.mllib.evaluation.RegressionMetrics;
 import org.apache.spark.sql.DataFrame;
 
@@ -34,13 +33,7 @@ public class DemandModeler {
         DataFrame holdout = model.transform(pp.getTestData()).select("prediction","label");
 
         RegressionMetrics rm = new RegressionMetrics(holdout);
-        BinaryClassificationMetrics bcm = new BinaryClassificationMetrics(holdout);
-
         System.out.println("Test Metrics");
-        System.out.println("AUC-recall precision curve:");
-        System.out.println(bcm.areaUnderPR());
-        System.out.println("AUC ROC:");
-        System.out.println(bcm.areaUnderROC());
         System.out.println("Test Explained Variance:");
         System.out.println(rm.explainedVariance());
         System.out.println("Test R^2 Coef:");
